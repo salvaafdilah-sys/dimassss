@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dimas Jelek 🐟</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@800&family=Nunito:wght@600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --air-atas:#0f8f9c;
+    --air-tengah:#0a4f7a;
+    --air-bawah:#0b1f4d;
+    --pasir:#e9c98f;
+    --teks:#fff7e0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;overflow:hidden;background:var(--air-bawah)}
+  body{
+    font-family:'Nunito','Trebuchet MS',sans-serif;
+    color:var(--teks);
+    background:linear-gradient(180deg,var(--air-atas) 0%,var(--air-tengah) 55%,var(--air-bawah) 100%);
+    position:relative;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  /* sinar cahaya dari atas */
+  .sinar{
+    position:absolute;inset:0;pointer-events:none;
+    background:
+      linear-gradient(105deg,transparent 20%,rgba(255,255,255,.10) 28%,transparent 36%),
+      linear-gradient(105deg,transparent 52%,rgba(255,255,255,.07) 58%,transparent 66%),
+      linear-gradient(105deg,transparent 76%,rgba(255,255,255,.09) 81%,transparent 88%);
+    animation:geser 14s ease-in-out infinite alternate;
+  }
+  @keyframes geser{from{transform:translateX(-4%)}to{transform:translateX(4%)}}
+
+  h1{
+    position:absolute;left:0;right:0;top:15%;
+    text-align:center;
+    font-family:'Baloo 2','Trebuchet MS',sans-serif;
+    font-weight:800;
+    font-size:clamp(3rem,13vw,9rem);
+    line-height:1;
+    letter-spacing:.01em;
+    pointer-events:none;
+    text-shadow:0 4px 0 rgba(8,30,70,.45),0 0 30px rgba(255,200,90,.35);
+    z-index:5;
+  }
+  h1 span{display:inline-block;animation:gelombang 3.2s ease-in-out infinite}
+  h1 .spasi{width:.3em}
+  @keyframes gelombang{
+    0%,100%{transform:translateY(0) rotate(-2deg)}
+    50%{transform:translateY(-.12em) rotate(2deg)}
+  }
+  .sub{
+    position:absolute;left:0;right:0;top:calc(15% + clamp(3.4rem,14vw,9.6rem));
+    text-align:center;font-size:clamp(.95rem,2.6vw,1.3rem);
+    opacity:.9;pointer-events:none;z-index:5;padding:0 1rem;
+  }
+
+  /* ikan */
+  .ikan{position:absolute;left:0;top:0;will-change:transform;z-index:3}
+  .ikan svg{display:block;width:100%;height:auto;overflow:visible}
+  .ikan .badan{transform-origin:20% 50%}
+  .ekor{transform-origin:8px 20px;animation:kibas .45s ease-in-out infinite alternate}
+  @keyframes kibas{from{transform:rotate(-14deg)}to{transform:rotate(14deg)}}
+  .omongan{
+    position:absolute;bottom:100%;left:50%;
+    transform:translateX(-50%);
+    white-space:nowrap;
+    background:#fff7e0;color:#0b1f4d;
+    font-weight:700;font-size:.8rem;
+    padding:.25rem .65rem;border-radius:999px;
+    box-shadow:0 2px 6px rgba(0,0,0,.25);
+    margin-bottom:4px;
+  }
+  .omongan::after{
+    content:"";position:absolute;top:100%;left:50%;margin-left:-5px;
+    border:5px solid transparent;border-top-color:#fff7e0;
+  }
+
+  /* gelembung */
+  .gelembung{
+    position:absolute;bottom:-20px;border-radius:50%;
+    border:1.5px solid rgba(255,255,255,.65);
+    background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.55),rgba(255,255,255,.05));
+    pointer-events:none;z-index:2;
+    animation:naik linear forwards;
+  }
+  @keyframes naik{
+    to{transform:translateY(calc(-100vh - 40px)) translateX(var(--goyang))}
+  }
+
+  /* dasar akuarium */
+  .dasar{
+    position:absolute;left:0;right:0;bottom:0;height:11vh;min-height:60px;
+    background:linear-gradient(180deg,#d9b574,var(--pasir));
+    border-radius:60% 40% 0 0 / 30% 25% 0 0;
+    z-index:4;pointer-events:none;
+  }
+  .rumput{position:absolute;bottom:calc(11vh - 14px);z-index:4;pointer-events:none;transform-origin:50% 100%;animation:ayun 4s ease-in-out infinite alternate}
+  @keyframes ayun{from{transform:rotate(-5deg)}to{transform:rotate(5deg)}}
+
+  .petunjuk{
+    position:absolute;left:0;right:0;bottom:1.2vh;text-align:center;
+    font-size:.85rem;color:#5a3d12;z-index:6;pointer-events:none;font-weight:700;
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    h1 span,.sinar,.rumput,.ekor{animation:none}
+  }
+</style>
+</head>
+<body>
+  <div class="sinar"></div>
+  <h1 id="judul" aria-label="Dimas jelek"></h1>
+  <p class="sub">dari yang sayang, buat pecinta ikan channa sedunia 🐟</p>
+
+  <div id="rumput"></div>
+  <div class="dasar"></div>
+  <div class="petunjuk">klik di mana saja buat nambah ikan baru</div>
+
+<script>
+(function(){
+  /* ---- judul bergelombang, huruf per huruf ---- */
+  var judul = document.getElementById('judul');
+  'DIMAS JELEK'.split('').forEach(function(h,i){
+    var s = document.createElement('span');
+    if(h===' '){ s.className='spasi'; s.innerHTML='&nbsp;'; }
+    else s.textContent = h;
+    s.style.animationDelay = (i*0.12)+'s';
+    judul.appendChild(s);
+  });
+
+  /* ---- palet channa: [badan, sirip, garis] ---- */
+  var warna = [
+    ['#ff7a1a','#ffb347','#c2410c'],  // jingga
+    ['#ff3d81','#ff9ac1','#a3124f'],  // pink
+    ['#18c6e8','#8be9ff','#0b6f8a'],  // biru muda
+    ['#ffd23f','#fff0a3','#b8860b'],  // kuning
+    ['#7ddf4a','#c8f7a1','#3b8a1c'],  // hijau
+    ['#a259ff','#d4b3ff','#5b21b6'],  // ungu
+    ['#ff4d4d','#ffa8a8','#9b1c1c'],  // merah
+    ['#2ee6b6','#a6fbe5','#0f7a5f']   // tosca
+  ];
+  var kata = [
+    'Dimas jelek','Dimas jelek!','jelek banget sih','Dimas mirip lele',
+    'cakepan aku','jelek tapi disayang','wkwkwk jelek','Dimas jelek 🐟'
+  ];
+
+  function svgIkan(w){
+    var b=w[0], s=w[1], g=w[2];
+    return '<svg viewBox="0 0 100 40"><g class="badan">'+
+      '<g class="ekor"><path d="M10 20 L-2 7 Q5 20 -2 33 Z" fill="'+s+'"/></g>'+
+      '<path d="M24 12 Q52 -4 80 11 Z" fill="'+s+'" opacity=".95"/>'+
+      '<path d="M32 29 Q54 40 74 29 Z" fill="'+s+'" opacity=".9"/>'+
+      '<path d="M8 20 Q30 7 70 9 Q92 11 99 20 Q92 29 70 31 Q30 33 8 20Z" fill="'+b+'"/>'+
+      '<path d="M18 20 Q45 16 92 19" stroke="'+g+'" stroke-width="2.2" fill="none" opacity=".55" stroke-linecap="round"/>'+
+      '<path d="M22 24 Q48 27 80 25" stroke="'+g+'" stroke-width="1.4" fill="none" opacity=".35" stroke-linecap="round"/>'+
+      '<path d="M70 12 Q86 12 96 18" stroke="#fff" stroke-width="2" fill="none" opacity=".35" stroke-linecap="round"/>'+
+      '<circle cx="88" cy="17" r="3" fill="#fff"/><circle cx="89" cy="17" r="1.5" fill="#101a3a"/>'+
+      '</g></svg>';
+  }
+
+  var tank = document.body;
+  var ikanList = [];
+
+  function bikinIkan(x,y,bicara){
+    var warnaIni = warna[Math.floor(Math.random()*warna.length)];
+    var lebar = 38 + Math.random()*46;               // ikan kecil-kecil
+    var el = document.createElement('div');
+    el.className = 'ikan';
+    el.style.width = lebar+'px';
+    el.innerHTML = svgIkan(warnaIni);
+    var arah = Math.random()<.5 ? 1 : -1;
+    var f = {
+      el:el, lebar:lebar,
+      x: x!==undefined ? x : Math.random()*innerWidth,
+      y: y!==undefined ? y : innerHeight*0.12 + Math.random()*innerHeight*0.68,
+      v: (0.35 + Math.random()*0.9) * (lebar/60+0.5),
+      arah:arah,
+      fase: Math.random()*6.28,
+      amp: 6 + Math.random()*14,
+      svg: el.firstChild
+    };
+    if(bicara){
+      var o = document.createElement('div');
+      o.className='omongan';
+      o.textContent = kata[Math.floor(Math.random()*kata.length)];
+      el.appendChild(o);
+    }
+    tank.appendChild(el);
+    ikanList.push(f);
+    return f;
+  }
+
+  var jumlah = innerWidth < 600 ? 18 : 30;
+  for(var i=0;i<jumlah;i++) bikinIkan(undefined,undefined,i%5===0);
+
+  var t = 0;
+  function jalan(){
+    t += 0.03;
+    for(var i=0;i<ikanList.length;i++){
+      var f = ikanList[i];
+      f.x += f.v * f.arah;
+      if(f.arah>0 && f.x > innerWidth+20){ f.x = -f.lebar-20; f.y = innerHeight*0.12+Math.random()*innerHeight*0.68; }
+      if(f.arah<0 && f.x < -f.lebar-20){ f.x = innerWidth+20; f.y = innerHeight*0.12+Math.random()*innerHeight*0.68; }
+      var yy = f.y + Math.sin(t*1.4 + f.fase)*f.amp;
+      f.el.style.transform = 'translate('+f.x+'px,'+yy+'px)';
+      f.svg.style.transform = f.arah>0 ? 'none' : 'scaleX(-1)';
+    }
+    requestAnimationFrame(jalan);
+  }
+  jalan();
+
+  /* ---- gelembung ---- */
+  function gelembung(x){
+    var g = document.createElement('div');
+    g.className='gelembung';
+    var d = 6 + Math.random()*14;
+    g.style.width = g.style.height = d+'px';
+    g.style.left = (x!==undefined ? x : Math.random()*innerWidth)+'px';
+    g.style.setProperty('--goyang',(Math.random()*60-30)+'px');
+    g.style.animationDuration = (6+Math.random()*7)+'s';
+    tank.appendChild(g);
+    setTimeout(function(){ g.remove(); }, 14000);
+  }
+  setInterval(function(){ gelembung(); }, 700);
+
+  /* ---- rumput laut ---- */
+  var r = document.getElementById('rumput');
+  var warnaRumput = ['#1f9d55','#2fbf71','#14804a'];
+  for(var k=0;k<14;k++){
+    var h = 40 + Math.random()*70;
+    var d = document.createElement('div');
+    d.className='rumput';
+    d.style.left = (k*7.5 + Math.random()*4)+'%';
+    d.style.animationDelay = (Math.random()*-4)+'s';
+    d.innerHTML = '<svg width="22" height="'+h+'" viewBox="0 0 22 '+h+'"><path d="M11 '+h+' Q2 '+(h*0.6)+' 11 '+(h*0.3)+' Q18 '+(h*0.12)+' 11 0 Q20 '+(h*0.15)+' 14 '+(h*0.4)+' Q8 '+(h*0.65)+' 11 '+h+'Z" fill="'+warnaRumput[k%3]+'"/></svg>';
+    document.body.appendChild(d);
+  }
+
+  /* ---- klik = ikan baru + gelembung ---- */
+  document.addEventListener('pointerdown', function(e){
+    bikinIkan(e.clientX - 30, e.clientY - 10, Math.random()<.6);
+    for(var i=0;i<4;i++) setTimeout(function(){ gelembung(e.clientX + (Math.random()*40-20)); }, i*90);
+    if(ikanList.length > 70){ var tua = ikanList.shift(); tua.el.remove(); }
+  });
+})();
+</script>
+</body>
+</html>
